@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AVis - US Traffic Accidents Visualizer</title>
+    
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+
+    <header>
+        <h1>🚗 AVis Dashboard</h1>
+        <a href="views/admin.html" class="admin-btn">Admin Login</a>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <aside class="sidebar">
+            <h2>Filtros</h2>
+            <button id="btn-export-csv">CSV</button>
+        </aside>
+
+        <main class="content">
+            <div id="map" style="height: 400px; background-color: #eee;"></div>
+
+            <div class="charts-container">
+                <div class="chart-wrapper">
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
