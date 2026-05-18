@@ -50,7 +50,7 @@ class AccidentModel
         // antes de meterla en la base de datos para que no nos hackeen (es una medida de seguridad)
 
         // Le volvemos a poner un límite para que no colapse si piden un estado entero
-        $query .= " LIMIT 500";
+        // $query .= " LIMIT 500";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -78,6 +78,87 @@ class AccidentModel
         }
 
         return false;
+    }
+
+    // Función para añadir un nuevo accidente
+    public function createAccident($datos)
+    {
+        // Preparamos la consulta SQL de inserción
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (ID, Start_Time, Start_Lat, Start_Lng, Severity, City, State, Weather_Condition) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Limpiamos los datos (seguridad básica)
+        $id = htmlspecialchars(strip_tags($datos->id));
+        $time = htmlspecialchars(strip_tags($datos->start_time));
+        $lat = htmlspecialchars(strip_tags($datos->start_lat));
+        $lng = htmlspecialchars(strip_tags($datos->start_lng));
+        $sev = htmlspecialchars(strip_tags($datos->severity));
+        $city = htmlspecialchars(strip_tags($datos->city));
+        $state = htmlspecialchars(strip_tags($datos->state));
+        $weather = htmlspecialchars(strip_tags($datos->weather));
+
+        // Vinculamos los parámetros: 
+        // "s" = string (texto/fecha), "d" = double (decimal), "i" = integer (entero)
+        $stmt->bind_param("ssddisss", $id, $time, $lat, $lng, $sev, $city, $state, $weather);
+
+        // Ejecutamos
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Estas 3 funciones son para que Diego las use para las estadísticas en el Front
+
+    // Función para obtener estadísticas agrupadas por Estado
+    // de esta forma, la BBDD hace el trabajo de agrupar y el backend 
+    // solo envía el resultado final al frontend
+    public function getStatsByState()
+    {
+        // Le pedimos a SQL que agrupe por estado y cuente cuántos hay en cada uno
+        $query = "SELECT State, COUNT(*) as Total 
+                  FROM " . $this->table_name . " 
+                  GROUP BY State 
+                  ORDER BY Total DESC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt->get_result();
+    }
+
+    // Función para obtener estadísticas agrupadas por Gravedad (Severidad)
+    public function getStatsBySeverity()
+    {
+        $query = "SELECT Severity, COUNT(*) as Total 
+                  FROM " . $this->table_name . " 
+                  GROUP BY Severity 
+                  ORDER BY Severity ASC";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt->get_result();
+    }
+
+    // Función para obtener estadísticas agrupadas por Clima (Top 10 para no saturar)
+    public function getStatsByWeather()
+    {
+        $query = "SELECT Weather_Condition, COUNT(*) as Total 
+                  FROM " . $this->table_name . " 
+                  WHERE Weather_Condition IS NOT NULL AND Weather_Condition != ''
+                  GROUP BY Weather_Condition 
+                  ORDER BY Total DESC 
+                  LIMIT 10";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt->get_result();
     }
 }
 ?>

@@ -88,6 +88,37 @@ class AccidentsController
         }
     }
 
+    // Nueva función para manejar la creación
+    public function create()
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+        $model = new AccidentModel($db);
+
+        // Capturamos el cuerpo de la petición (JSON)
+        $data = json_decode(file_get_contents("php://input"));
+
+        // Comprobamos que no nos envíen campos vacíos
+        if (
+            !empty($data->id) && !empty($data->start_time) &&
+            !empty($data->start_lat) && !empty($data->start_lng) &&
+            !empty($data->severity) && !empty($data->city) &&
+            !empty($data->state) && !empty($data->weather)
+        ) {
+            // Intentamos crear el accidente
+            if ($model->createAccident($data)) {
+                http_response_code(201); // 201 significa "Creado"
+                echo json_encode(array("message" => "Accident succesfully created."));
+            } else {
+                http_response_code(503); // Servicio no disponible
+                echo json_encode(array("message" => "The accident could not be created."));
+            }
+        } else {
+            http_response_code(400); // Bad Request
+            echo json_encode(array("message" => "Incomplete data. Missing required fields."));
+        }
+    }
+
 }
 
 // Enrutador: con la URL (Accident-Web-Visualizer-Web-Tech-/api/AccidentsController.php)
@@ -104,6 +135,10 @@ switch ($method) {
     case 'DELETE':
         // Si piden borrar, llamamos a la función de borrado
         $api->delete();
+        break;
+    case 'POST':
+        // Si envían datos (crear), llamamos a la función de creación
+        $api->create();
         break;
     default:
         // Si intentan usar POST, PUT, etc. (que aún no hemos programado)
