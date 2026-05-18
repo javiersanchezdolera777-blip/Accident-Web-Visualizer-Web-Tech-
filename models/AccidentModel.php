@@ -157,7 +157,7 @@ class AccidentModel
         return false;
     }
 
-    // Estas 3 funciones son para que Diego las use para las estadísticas en el Front
+    // Estas 3 funciones siguientes son para que Diego las use para las estadísticas en el Front
 
     // Función para obtener estadísticas agrupadas por Estado
     // de esta forma, la BBDD hace el trabajo de agrupar y el backend 

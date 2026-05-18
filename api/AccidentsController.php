@@ -40,11 +40,6 @@ class AccidentsController
             $filtros['date_to'] = $_GET['date_to'];
         }
 
-        // ... tus filtros anteriores ...
-        if (isset($_GET['date_to'])) {
-            $filtros['date_to'] = $_GET['date_to'];
-        }
-
         // Añadimos estos nuevos parámetros de paginación
         // por si la muestra es demasiado grande y nos conviene limitarla
         if (isset($_GET['page'])) {
