@@ -6,7 +6,10 @@ let markerGroup;
 let barChartInstance = null; 
 let pieChartInstance = null; 
 let currentAccidentsData = []; 
+<<<<<<< HEAD
 let currentStatsData = null; // NUEVO: Guardará los datos precalculados de Javiki
+=======
+>>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
 
 // ==========================================
 // INICIALIZACIÓN (Al cargar la página)
@@ -14,10 +17,14 @@ let currentStatsData = null; // NUEVO: Guardará los datos precalculados de Javi
 document.addEventListener('DOMContentLoaded', () => {
     console.log("¡Iniciando AVis Frontend!");
     initMap();
+<<<<<<< HEAD
     
     // Carga inicial sin filtros
     fetchAccidentsData(); 
     fetchStatsData(); // NUEVO: Pedimos también las estadísticas
+=======
+    fetchAccidentsData(); // Carga inicial sin filtros
+>>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
 
     // Escuchar el botón de Aplicar Filtros
     document.getElementById('btn-apply-filters').addEventListener('click', () => {
@@ -37,9 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const queryString = params.toString() ? '?' + params.toString() : '';
         
+<<<<<<< HEAD
         // Disparamos ambas peticiones con los filtros
         fetchAccidentsData(queryString);
         fetchStatsData(queryString); // NUEVO
+=======
+        fetchAccidentsData(queryString);
+>>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
     });
 
     // Escuchar los botones de exportar
@@ -66,6 +77,7 @@ function fetchAccidentsData(queryParams = '') {
 
     fetch(apiUrl)
         .then(response => {
+<<<<<<< HEAD
             if (response.status === 404) return []; 
             if (!response.ok) throw new Error('Error en red: ' + response.statusText);
             return response.json();
@@ -74,18 +86,43 @@ function fetchAccidentsData(queryParams = '') {
             console.log("✅ Datos del mapa recibidos:", data);
             currentAccidentsData = data;
             
+=======
+            // Si el backend no encuentra nada, evitamos el error devolviendo una lista vacía
+            if (response.status === 404) {
+                return []; 
+            }
+            if (!response.ok) throw new Error('Error en red: ' + response.statusText);
+            
+            return response.json();
+        })
+        .then(data => {
+            console.log("✅ Datos recibidos:", data);
+            currentAccidentsData = data;
+            
+            // Si la búsqueda no dio resultados, avisamos al usuario
+>>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
             if (data.length === 0) {
                 alert("No se encontraron accidentes con esos filtros.");
             }
             
             plotDataOnMap(data);
+<<<<<<< HEAD
         })
         .catch(error => console.error("❌ Error API Mapa:", error));
+=======
+            initCharts(data);
+        })
+        .catch(error => console.error("❌ Error API:", error));
+>>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
 }
 
 function plotDataOnMap(accidents) {
     if (!Array.isArray(accidents)) return;
     
+<<<<<<< HEAD
+=======
+    // Borramos los pines antiguos
+>>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
     markerGroup.clearLayers(); 
 
     accidents.forEach(accident => {
