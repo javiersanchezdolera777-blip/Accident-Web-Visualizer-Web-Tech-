@@ -6,7 +6,6 @@
     <title>AVis - US Traffic Accidents Visualizer</title>
     
     <link rel="stylesheet" href="assets/css/style.css">
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
@@ -20,7 +19,61 @@
         
         <aside class="sidebar">
             <h2>Filtros</h2>
-            <button id="btn-export-csv">CSV</button>
+            
+            <div style="margin-bottom: 15px;">
+                <label for="filter-state"><strong>Estado:</strong></label><br>
+                <select id="filter-state" style="width: 100%; padding: 5px;">
+                    <option value="">Todos los estados</option>
+                    <option value="CA">California (CA)</option>
+                    <option value="TX">Texas (TX)</option>
+                    <option value="FL">Florida (FL)</option>
+                    <option value="NY">Nueva York (NY)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="filter-severity"><strong>Severidad:</strong></label><br>
+                <select id="filter-severity" style="width: 100%; padding: 5px;">
+                    <option value="">Cualquier nivel</option>
+                    <option value="1">Nivel 1 (Leve)</option>
+                    <option value="2">Nivel 2 (Moderado)</option>
+                    <option value="3">Nivel 3 (Grave)</option>
+                    <option value="4">Nivel 4 (Muy Grave)</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="filter-weather"><strong>Clima:</strong></label><br>
+                <select id="filter-weather" style="width: 100%; padding: 5px;">
+                    <option value="">Cualquier clima</option>
+                    <option value="Clear">Despejado (Clear)</option>
+                    <option value="Overcast">Nublado (Overcast)</option>
+                    <option value="Light Rain">Lluvia Ligera</option>
+                    <option value="Mostly Cloudy">Mayormente Nublado</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="filter-date-from"><strong>Desde:</strong></label><br>
+                <input type="date" id="filter-date-from" style="width: 100%; padding: 5px;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="filter-date-to"><strong>Hasta:</strong></label><br>
+                <input type="date" id="filter-date-to" style="width: 100%; padding: 5px;">
+            </div>
+            <button id="btn-apply-filters" style="width: 100%; padding: 10px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                Aplicar Filtros
+            </button>
+            
+            <hr style="margin: 20px 0;">
+            
+            <h3>Exportar Datos</h3>
+            <div style="display: flex; gap: 10px; flex-direction: column;">
+                <button id="btn-export-csv" style="padding: 10px; cursor: pointer;">Descargar CSV</button>
+                <button id="btn-export-webp" style="padding: 10px; cursor: pointer;">Gráfica en WebP</button>
+                <button id="btn-export-svg" style="padding: 10px; cursor: pointer;">Gráfica en SVG</button>
+            </div>
         </aside>
 
         <main class="content">
@@ -39,7 +92,6 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script src="assets/js/main.js"></script>
 </body>
 </html>

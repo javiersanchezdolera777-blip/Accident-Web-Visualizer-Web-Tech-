@@ -1,5 +1,58 @@
 /* assets/css/style.css */
+/* Reseteo básico y tipografía */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+}
 
+/* Cabecera */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* --- LA MAGIA DEL LAYOUT (FLEXBOX) --- */
+.dashboard-container {
+    display: flex;
+    /* En móviles, se apila en una sola columna */
+    flex-direction: column; 
+    min-height: calc(100vh - 70px);
+}
+
+/* En pantallas grandes (Escritorio), pasamos a 2 columnas */
+@media (min-width: 768px) {
+    .dashboard-container {
+        flex-direction: row;
+    }
+    
+    .sidebar {
+        width: 250px; /* Ancho fijo para los filtros */
+        background-color: #fff;
+        padding: 20px;
+        border-right: 1px solid #ddd;
+        flex-shrink: 0;
+    }
+    
+    .content {
+        flex-grow: 1; /* Ocupa el resto del espacio libre */
+        padding: 20px;
+        overflow-y: auto;
+    }
+}
 /* Contenedor principal de los gráficos */
 .charts-container {
     display: flex;
@@ -23,4 +76,47 @@
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+/* =========================================
+   ESTILOS ZONA ADMINISTRACIÓN
+========================================= */
+.admin-body {
+    background-color: #ecf0f1;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 70px);
+}
+
+.login-card {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.admin-table th, .admin-table td {
+    border-bottom: 1px solid #ddd;
+}
+
+.admin-table tr:hover {
+    background-color: #f1f2f6;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
 }
