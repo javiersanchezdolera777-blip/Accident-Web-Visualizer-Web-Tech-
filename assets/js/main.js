@@ -6,6 +6,7 @@ let markerGroup;
 let barChartInstance = null; 
 let pieChartInstance = null; 
 let currentAccidentsData = []; 
+let currentStatsData = null; // NUEVO: Guardará los datos precalculados de Javiki
 
 // ==========================================
 // INICIALIZACIÓN (Al cargar la página)
@@ -13,7 +14,10 @@ let currentAccidentsData = [];
 document.addEventListener('DOMContentLoaded', () => {
     console.log("¡Iniciando AVis Frontend!");
     initMap();
-    fetchAccidentsData(); // Carga inicial sin filtros
+    
+    // Carga inicial sin filtros
+    fetchAccidentsData(); 
+    fetchStatsData(); // NUEVO: Pedimos también las estadísticas
 
     // Escuchar el botón de Aplicar Filtros
     document.getElementById('btn-apply-filters').addEventListener('click', () => {
@@ -33,7 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const queryString = params.toString() ? '?' + params.toString() : '';
         
+        // Disparamos ambas peticiones con los filtros
         fetchAccidentsData(queryString);
+        fetchStatsData(queryString); // NUEVO
     });
 
     // Escuchar los botones de exportar
@@ -60,33 +66,26 @@ function fetchAccidentsData(queryParams = '') {
 
     fetch(apiUrl)
         .then(response => {
-            // Si el backend no encuentra nada, evitamos el error devolviendo una lista vacía
-            if (response.status === 404) {
-                return []; 
-            }
+            if (response.status === 404) return []; 
             if (!response.ok) throw new Error('Error en red: ' + response.statusText);
-            
             return response.json();
         })
         .then(data => {
-            console.log("✅ Datos recibidos:", data);
+            console.log("✅ Datos del mapa recibidos:", data);
             currentAccidentsData = data;
             
-            // Si la búsqueda no dio resultados, avisamos al usuario
             if (data.length === 0) {
                 alert("No se encontraron accidentes con esos filtros.");
             }
             
             plotDataOnMap(data);
-            initCharts(data);
         })
-        .catch(error => console.error("❌ Error API:", error));
+        .catch(error => console.error("❌ Error API Mapa:", error));
 }
 
 function plotDataOnMap(accidents) {
     if (!Array.isArray(accidents)) return;
     
-    // Borramos los pines antiguos
     markerGroup.clearLayers(); 
 
     accidents.forEach(accident => {
@@ -106,32 +105,47 @@ function plotDataOnMap(accidents) {
 }
 
 // ==========================================
-// FUNCIONES DE GRÁFICOS
+// NUEVA FUNCIÓN: PEDIR ESTADÍSTICAS A LA API
 // ==========================================
-function initCharts(accidents) {
-    if (!Array.isArray(accidents)) return;
-    
-    const stateCounts = {};
-    const severityCounts = {};
+function fetchStatsData(queryParams = '') {
+    const statsUrl = 'api/StatsController.php' + queryParams;
 
-    accidents.forEach(acc => {
-        const state = acc.State || 'Unknown';
-        const severity = acc.Severity || 'Unknown';
-        stateCounts[state] = (stateCounts[state] || 0) + 1;
-        severityCounts[severity] = (severityCounts[severity] || 0) + 1;
-    });
+    fetch(statsUrl)
+        .then(response => {
+            if (response.status === 404) return null; 
+            if (!response.ok) throw new Error('Error en red: ' + response.statusText);
+            return response.json();
+        })
+        .then(statsData => {
+            console.log("📊 Estadísticas recibidas de Javiki:", statsData);
+            currentStatsData = statsData; // Lo guardamos por si queremos exportar SVG
+            
+            // Le pasamos estos datos limpios a los gráficos
+            if (statsData) initCharts(statsData);
+        })
+        .catch(error => console.error("❌ Error API Stats:", error));
+}
 
-    // Gráfico de Barras
+// ==========================================
+// FUNCIONES DE GRÁFICOS (Ahora mucho más limpias)
+// ==========================================
+function initCharts(statsData) {
+    // Si no hay datos, no dibujamos nada
+    if (!statsData || !statsData.states || !statsData.severity) return;
+
+    // --- Gráfico de Barras (Estados) ---
     const ctxBar = document.getElementById('barChart').getContext('2d');
     if (barChartInstance) barChartInstance.destroy();
     
     barChartInstance = new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: Object.keys(stateCounts),
+            // Leemos los nombres de los estados
+            labels: statsData.states.map(item => item.state), 
             datasets: [{
                 label: 'Número de Accidentes',
-                data: Object.values(stateCounts),
+                // Leemos los totales
+                data: statsData.states.map(item => item.total), 
                 backgroundColor: '#3498db',
                 borderRadius: 5
             }]
@@ -143,16 +157,16 @@ function initCharts(accidents) {
         }
     });
 
-    // Gráfico de Tarta
+    // --- Gráfico de Tarta (Severidad) ---
     const ctxPie = document.getElementById('pieChart').getContext('2d');
     if (pieChartInstance) pieChartInstance.destroy();
     
     pieChartInstance = new Chart(ctxPie, {
         type: 'doughnut',
         data: {
-            labels: Object.keys(severityCounts).map(s => 'Nivel ' + s),
+            labels: statsData.severity.map(item => 'Nivel ' + item.level),
             datasets: [{
-                data: Object.values(severityCounts),
+                data: statsData.severity.map(item => item.total),
                 backgroundColor: ['#f1c40f', '#e67e22', '#e74c3c', '#8b0000'] 
             }]
         },
@@ -191,12 +205,14 @@ function exportToWebP() {
     link.click();
 }
 
+// Actualizado para usar las estadísticas de Javiki en lugar de contar a mano
 function exportToSVG() {
-    if (currentAccidentsData.length === 0) return;
-    const stateCounts = {};
-    currentAccidentsData.forEach(acc => stateCounts[acc.State || 'Unknown'] = (stateCounts[acc.State || 'Unknown'] || 0) + 1);
+    if (!currentStatsData || !currentStatsData.states) return;
     
-    const states = Object.keys(stateCounts), values = Object.values(stateCounts), maxValue = Math.max(...values, 1);
+    const statesData = currentStatsData.states;
+    const states = statesData.map(item => item.state);
+    const values = statesData.map(item => item.total);
+    const maxValue = Math.max(...values, 1);
     
     let svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${states.length * 40 + 80}">
         <rect width="100%" height="100%" fill="#f4f4f9"/>
