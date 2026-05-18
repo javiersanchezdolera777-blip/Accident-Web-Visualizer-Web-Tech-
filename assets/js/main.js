@@ -7,9 +7,13 @@ let barChartInstance = null;
 let pieChartInstance = null; 
 let currentAccidentsData = []; 
 <<<<<<< HEAD
+<<<<<<< HEAD
 let currentStatsData = null; // NUEVO: Guardará los datos precalculados de Javiki
 =======
 >>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
+=======
+let currentStatsData = null; // NUEVO: Guardará los datos precalculados de Javiki
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
 
 // ==========================================
 // INICIALIZACIÓN (Al cargar la página)
@@ -18,13 +22,19 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("¡Iniciando AVis Frontend!");
     initMap();
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
     
     // Carga inicial sin filtros
     fetchAccidentsData(); 
     fetchStatsData(); // NUEVO: Pedimos también las estadísticas
+<<<<<<< HEAD
 =======
     fetchAccidentsData(); // Carga inicial sin filtros
 >>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
+=======
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
 
     // Escuchar el botón de Aplicar Filtros
     document.getElementById('btn-apply-filters').addEventListener('click', () => {
@@ -45,12 +55,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const queryString = params.toString() ? '?' + params.toString() : '';
         
 <<<<<<< HEAD
+<<<<<<< HEAD
         // Disparamos ambas peticiones con los filtros
         fetchAccidentsData(queryString);
         fetchStatsData(queryString); // NUEVO
 =======
         fetchAccidentsData(queryString);
 >>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
+=======
+        // Disparamos ambas peticiones con los filtros
+        fetchAccidentsData(queryString);
+        fetchStatsData(queryString); // NUEVO
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
     });
 
     // Escuchar los botones de exportar
@@ -78,6 +94,7 @@ function fetchAccidentsData(queryParams = '') {
     fetch(apiUrl)
         .then(response => {
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (response.status === 404) return []; 
             if (!response.ok) throw new Error('Error en red: ' + response.statusText);
             return response.json();
@@ -91,21 +108,27 @@ function fetchAccidentsData(queryParams = '') {
             if (response.status === 404) {
                 return []; 
             }
+=======
+            if (response.status === 404) return []; 
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
             if (!response.ok) throw new Error('Error en red: ' + response.statusText);
-            
             return response.json();
         })
         .then(data => {
-            console.log("✅ Datos recibidos:", data);
+            console.log("✅ Datos del mapa recibidos:", data);
             currentAccidentsData = data;
             
+<<<<<<< HEAD
             // Si la búsqueda no dio resultados, avisamos al usuario
 >>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
+=======
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
             if (data.length === 0) {
                 alert("No se encontraron accidentes con esos filtros.");
             }
             
             plotDataOnMap(data);
+<<<<<<< HEAD
 <<<<<<< HEAD
         })
         .catch(error => console.error("❌ Error API Mapa:", error));
@@ -114,15 +137,22 @@ function fetchAccidentsData(queryParams = '') {
         })
         .catch(error => console.error("❌ Error API:", error));
 >>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
+=======
+        })
+        .catch(error => console.error("❌ Error API Mapa:", error));
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
 }
 
 function plotDataOnMap(accidents) {
     if (!Array.isArray(accidents)) return;
     
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     // Borramos los pines antiguos
 >>>>>>> 2e26dc9 (feat: frontend principal 100% terminado con filtros y exportaciones)
+=======
+>>>>>>> 03efd12 (feat: estructura base del panel de admin y login creada)
     markerGroup.clearLayers(); 
 
     accidents.forEach(accident => {
