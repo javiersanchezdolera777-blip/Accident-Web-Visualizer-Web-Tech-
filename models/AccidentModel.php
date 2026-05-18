@@ -50,7 +50,20 @@ class AccidentModel
         // antes de meterla en la base de datos para que no nos hackeen (es una medida de seguridad)
 
         // Le volvemos a poner un límite para que no colapse si piden un estado entero
-        // $query .= " LIMIT 500";
+        // $query .= " LIMIT 500"; Quitamos el limite de 500 para que se muestren todos los accidentes
+
+        // LÓGICA DE PAGINACIÓN
+        // Si nos pasan una página, la usamos. Si no, por defecto es la página 1.
+        $page = (isset($filtros['page']) && $filtros['page'] > 0) ? $filtros['page'] : 1;
+
+        // Si nos pasan un límite, lo usamos. Si no, por defecto damos 1100 para que el mapa de Diego cargue bien.
+        $limit = (isset($filtros['limit']) && $filtros['limit'] > 0) ? $filtros['limit'] : 1100;
+
+        // Calculamos cuántos registros nos saltamos
+        $offset = ($page - 1) * $limit;
+
+        // Añadimos el LIMIT y OFFSET a la consulta SQL
+        $query .= " LIMIT " . $limit . " OFFSET " . $offset;
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
@@ -103,6 +116,38 @@ class AccidentModel
         // Vinculamos los parámetros: 
         // "s" = string (texto/fecha), "d" = double (decimal), "i" = integer (entero)
         $stmt->bind_param("ssddisss", $id, $time, $lat, $lng, $sev, $city, $state, $weather);
+
+        // Ejecutamos
+        if ($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Función para actualizar un accidente existente (con esto complemtamos CRUD)
+    public function updateAccident($datos)
+    {
+        // Preparamos la consulta SQL de actualización
+        $query = "UPDATE " . $this->table_name . " 
+                  SET Start_Time = ?, Start_Lat = ?, Start_Lng = ?, Severity = ?, City = ?, State = ?, Weather_Condition = ?
+                  WHERE ID = ?";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Limpiamos los datos por seguridad
+        $time = htmlspecialchars(strip_tags($datos->start_time));
+        $lat = htmlspecialchars(strip_tags($datos->start_lat));
+        $lng = htmlspecialchars(strip_tags($datos->start_lng));
+        $sev = htmlspecialchars(strip_tags($datos->severity));
+        $city = htmlspecialchars(strip_tags($datos->city));
+        $state = htmlspecialchars(strip_tags($datos->state));
+        $weather = htmlspecialchars(strip_tags($datos->weather));
+        $id = htmlspecialchars(strip_tags($datos->id)); // El ID va al final para el WHERE
+
+        // Vinculamos los parámetros en el orden exacto de los interrogantes:
+        // string, double, double, integer, string, string, string, string -> "sddissss"
+        $stmt->bind_param("sddissss", $time, $lat, $lng, $sev, $city, $state, $weather, $id);
 
         // Ejecutamos
         if ($stmt->execute()) {

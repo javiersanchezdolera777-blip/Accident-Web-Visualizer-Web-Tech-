@@ -40,6 +40,20 @@ class AccidentsController
             $filtros['date_to'] = $_GET['date_to'];
         }
 
+        // ... tus filtros anteriores ...
+        if (isset($_GET['date_to'])) {
+            $filtros['date_to'] = $_GET['date_to'];
+        }
+
+        // Añadimos estos nuevos parámetros de paginación
+        // por si la muestra es demasiado grande y nos conviene limitarla
+        if (isset($_GET['page'])) {
+            $filtros['page'] = (int) $_GET['page'];
+        }
+        if (isset($_GET['limit'])) {
+            $filtros['limit'] = (int) $_GET['limit'];
+        }
+
         // pasamos los filtros al modelo
         $result = $model->getAccidents($filtros);
 
@@ -119,6 +133,32 @@ class AccidentsController
         }
     }
 
+    // Nueva función para manejar la actualización (PUT)
+    public function update()
+    {
+        $database = new Database();
+        $db = $database->getConnection();
+        $model = new AccidentModel($db);
+
+        // Capturamos los datos que nos envían
+        $data = json_decode(file_get_contents("php://input"));
+
+        // Comprobamos que como mínimo nos envíen el ID para saber qué actualizar
+        if (!empty($data->id)) {
+            // Intentamos actualizar
+            if ($model->updateAccident($data)) {
+                http_response_code(200); // 200 OK
+                echo json_encode(array("message" => "Accident succesfully updated."));
+            } else {
+                http_response_code(503); // Servicio no disponible
+                echo json_encode(array("message" => "The accident could not be updated."));
+            }
+        } else {
+            http_response_code(400); // Bad Request
+            echo json_encode(array("message" => "Incomplete data. Missing ID of the accident to be modified."));
+        }
+    }
+
 }
 
 // Enrutador: con la URL (Accident-Web-Visualizer-Web-Tech-/api/AccidentsController.php)
@@ -139,6 +179,10 @@ switch ($method) {
     case 'POST':
         // Si envían datos (crear), llamamos a la función de creación
         $api->create();
+        break;
+    case 'PUT':
+        // Si envían datos (actualizar), llamamos a la función de actualización
+        $api->update();
         break;
     default:
         // Si intentan usar POST, PUT, etc. (que aún no hemos programado)

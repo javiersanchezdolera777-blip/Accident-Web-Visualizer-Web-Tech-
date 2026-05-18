@@ -52,7 +52,7 @@ class StatsController
         if (empty($response["states"]) && empty($response["severity"]) && empty($response["weather"])) {
             // Si están vacíos, mandamos un código 404 (Not Found)
             http_response_code(404);
-            echo json_encode(array("message" => "No se encontraron datos para generar las estadísticas."));
+            echo json_encode(array("message" => "No data was found to generate the statistics."));
         } else {
             // Si al menos uno tiene datos, enviamos el 200 OK
             http_response_code(200);
