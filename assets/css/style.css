@@ -1,5 +1,58 @@
 /* assets/css/style.css */
+/* Reseteo básico y tipografía */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+}
 
+/* Cabecera */
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-btn {
+    background-color: #e74c3c;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* --- LA MAGIA DEL LAYOUT (FLEXBOX) --- */
+.dashboard-container {
+    display: flex;
+    /* En móviles, se apila en una sola columna */
+    flex-direction: column; 
+    min-height: calc(100vh - 70px);
+}
+
+/* En pantallas grandes (Escritorio), pasamos a 2 columnas */
+@media (min-width: 768px) {
+    .dashboard-container {
+        flex-direction: row;
+    }
+    
+    .sidebar {
+        width: 250px; /* Ancho fijo para los filtros */
+        background-color: #fff;
+        padding: 20px;
+        border-right: 1px solid #ddd;
+        flex-shrink: 0;
+    }
+    
+    .content {
+        flex-grow: 1; /* Ocupa el resto del espacio libre */
+        padding: 20px;
+        overflow-y: auto;
+    }
+}
 /* Contenedor principal de los gráficos */
 .charts-container {
     display: flex;
