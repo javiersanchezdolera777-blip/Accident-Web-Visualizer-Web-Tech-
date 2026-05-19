@@ -157,53 +157,87 @@ class AccidentModel
         return false;
     }
 
+    // Función auxiliar que construye el WHERE con los filtros para las estadísticas
+    // Es privada porque solo la usan las 3 funciones de stats de esta clase
+    // La idea es no repetir el mismo bloque de IFs en cada función como teníamos antes (DRY)
+    // Si $filtros está vacío, devuelve " WHERE 1=1" (que es como no filtrar nada).
+    private function buildStatsWhereClause($filtros = array())
+    {
+        $where = " WHERE 1=1";
+
+        if (isset($filtros['state'])) {
+            $state_limpio = $this->conn->real_escape_string($filtros['state']);
+            $where .= " AND State = '" . $state_limpio . "'";
+        }
+        if (isset($filtros['severity'])) {
+            $sev_limpia = $this->conn->real_escape_string($filtros['severity']);
+            $where .= " AND Severity = " . $sev_limpia;
+        }
+        if (isset($filtros['weather'])) {
+            $weather_limpio = $this->conn->real_escape_string($filtros['weather']);
+            $where .= " AND Weather_Condition = '" . $weather_limpio . "'";
+        }
+        if (isset($filtros['date_from']) && isset($filtros['date_to'])) {
+            $from = $this->conn->real_escape_string($filtros['date_from']);
+            $to = $this->conn->real_escape_string($filtros['date_to']);
+            $where .= " AND Start_Time BETWEEN '" . $from . " 00:00:00' AND '" . $to . " 23:59:59'";
+        }
+
+        return $where;
+    }
+
+
     // Estas 3 funciones siguientes son para que Diego las use para las estadísticas en el Front
 
-    // Función para obtener estadísticas agrupadas por Estado
-    // de esta forma, la BBDD hace el trabajo de agrupar y el backend 
-    // solo envía el resultado final al frontend
-    public function getStatsByState()
+    // Ahora acepta $filtros como parámetro opcional (por defecto vacío = sin filtrar).
+// Usa buildStatsWhereClause() para inyectar el WHERE dinámico en la query
+    public function getStatsByState($filtros = array())
     {
-        // Le pedimos a SQL que agrupe por estado y cuente cuántos hay en cada uno
         $query = "SELECT State, COUNT(*) as Total 
-                  FROM " . $this->table_name . " 
-                  GROUP BY State 
-                  ORDER BY Total DESC";
+              FROM " . $this->table_name
+            . $this->buildStatsWhereClause($filtros) .
+            " GROUP BY State 
+              ORDER BY Total DESC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-
         return $stmt->get_result();
     }
 
-    // Función para obtener estadísticas agrupadas por Gravedad (Severidad)
-    public function getStatsBySeverity()
+
+    // Mismo patrón que getStatsByState: acepta filtros y construye el WHERE dinámico
+    public function getStatsBySeverity($filtros = array())
     {
         $query = "SELECT Severity, COUNT(*) as Total 
-                  FROM " . $this->table_name . " 
-                  GROUP BY Severity 
-                  ORDER BY Severity ASC";
+              FROM " . $this->table_name
+            . $this->buildStatsWhereClause($filtros) .
+            " GROUP BY Severity 
+              ORDER BY Severity ASC";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-
         return $stmt->get_result();
     }
 
-    // Función para obtener estadísticas agrupadas por Clima (Top 10 para no saturar)
-    public function getStatsByWeather()
+    // Esta función es un poco diferente: además del WHERE de los filtros,
+    // necesita añadir la condición de que el clima no sea nulo ni vacío.
+    // Por eso primero obtenemos el WHERE base y luego le concatenamos el AND extra.
+    public function getStatsByWeather($filtros = array())
     {
+        $where = $this->buildStatsWhereClause($filtros);
+        $where .= " AND Weather_Condition IS NOT NULL AND Weather_Condition != ''";
+
         $query = "SELECT Weather_Condition, COUNT(*) as Total 
-                  FROM " . $this->table_name . " 
-                  WHERE Weather_Condition IS NOT NULL AND Weather_Condition != ''
-                  GROUP BY Weather_Condition 
-                  ORDER BY Total DESC 
-                  LIMIT 10";
+              FROM " . $this->table_name
+            . $where .
+            " GROUP BY Weather_Condition 
+              ORDER BY Total DESC 
+              LIMIT 10";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-
         return $stmt->get_result();
     }
+
 }
 ?>

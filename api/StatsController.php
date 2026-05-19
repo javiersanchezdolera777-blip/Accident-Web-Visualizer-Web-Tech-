@@ -14,6 +14,20 @@ class StatsController
         $db = $database->getConnection();
         $model = new AccidentModel($db);
 
+        // Capturamos los filtros de la URL (los mismos que usa AccidentsController)
+        $filtros = array();
+        if (isset($_GET['state']))
+            $filtros['state'] = $_GET['state'];
+        if (isset($_GET['severity']))
+            $filtros['severity'] = $_GET['severity'];
+        if (isset($_GET['weather']))
+            $filtros['weather'] = $_GET['weather'];
+        if (isset($_GET['date_from']))
+            $filtros['date_from'] = $_GET['date_from'];
+        if (isset($_GET['date_to']))
+            $filtros['date_to'] = $_GET['date_to'];
+
+
         // Contenedor principal de la respuesta
         $response = array(
             "states" => array(),
@@ -21,8 +35,15 @@ class StatsController
             "weather" => array()
         );
 
+        // Ejecutamos las 3 consultas de estadísticas pasándoles los filtros
+// Si no hay filtros, $filtros estará vacío y las funciones devolverán datos globales
+// Si Diego aplica un filtro en el front (ej: state=CA), los gráficos se actualizarán acorde
+
+        $resStates = $model->getStatsByState($filtros);
+        $resSeverity = $model->getStatsBySeverity($filtros);
+        $resWeather = $model->getStatsByWeather($filtros);
+
         // 1. Recopilar estadísticas por Estado
-        $resStates = $model->getStatsByState();
         while ($row = $resStates->fetch_assoc()) {
             array_push($response["states"], array(
                 "state" => $row['State'],
@@ -31,7 +52,6 @@ class StatsController
         }
 
         // 2. Recopilar estadísticas por Gravedad
-        $resSeverity = $model->getStatsBySeverity();
         while ($row = $resSeverity->fetch_assoc()) {
             array_push($response["severity"], array(
                 "level" => (int) $row['Severity'],
@@ -40,7 +60,6 @@ class StatsController
         }
 
         // 3. Recopilar estadísticas por Clima
-        $resWeather = $model->getStatsByWeather();
         while ($row = $resWeather->fetch_assoc()) {
             array_push($response["weather"], array(
                 "condition" => $row['Weather_Condition'],
