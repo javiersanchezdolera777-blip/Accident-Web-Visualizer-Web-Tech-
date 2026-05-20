@@ -239,5 +239,18 @@ class AccidentModel
         return $stmt->get_result();
     }
 
+    // Función para obtener todos los datos filtrados para la exportación CSV(sin límites de paginación)
+    public function getAccidentsForExport($filtros = array())
+    {
+        $query = "SELECT ID, Start_Time, Start_Lat, Start_Lng, Severity, City, State, Weather_Condition 
+                  FROM " . $this->table_name .
+            $this->buildStatsWhereClause($filtros);
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt->get_result();
+    }
+
 }
 ?>
