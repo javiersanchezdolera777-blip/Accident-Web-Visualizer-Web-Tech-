@@ -1,3 +1,4 @@
+Chart.register(ChartDataLabels); // Registramos el plugin de etiquetas dinámicas
 // ==========================================
 // VARIABLES GLOBALES
 // ==========================================
@@ -153,8 +154,16 @@ function initCharts(statsData) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Accidentes por Estado' } }
-        }
+        plugins: { 
+                title: { display: true, text: 'Accidentes por Estado' },
+                // NUEVO: Esto pinta los números encima de las barras invisibles
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top',
+                    font: { weight: 'bold', size: 11 },
+                    color: '#333'
+                }        }
+            }
     });
 
     // --- Gráfico de Tarta (Severidad) ---
