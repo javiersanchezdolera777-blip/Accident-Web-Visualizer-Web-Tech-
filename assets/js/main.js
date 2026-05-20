@@ -130,9 +130,15 @@ function initCharts(statsData) {
 function exportToCSV() {
     const stateValue = document.getElementById('filter-state').value;
     const severityValue = document.getElementById('filter-severity').value;
+    const weatherValue = document.getElementById('filter-weather').value;
+    const dateFromValue = document.getElementById('filter-date-from').value;
+    const dateToValue = document.getElementById('filter-date-to').value;
     const params = new URLSearchParams();
     if (stateValue) params.append('state', stateValue);
     if (severityValue) params.append('severity', severityValue);
+    if (weatherValue) params.append('weather', weatherValue);
+    if (dateFromValue) params.append('date_from', dateFromValue);
+    if (dateToValue) params.append('date_to', dateToValue);
     
     let url = 'api/ExportController.php';
     if (params.toString()) url += '?' + params.toString();

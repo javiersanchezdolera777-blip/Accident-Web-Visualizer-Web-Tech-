@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    document.getElementById('btn-export-csv').addEventListener('click', exportToCSV);
 });
 
 function fetchAdminData() {
@@ -216,3 +217,10 @@ window.deleteAccident = function(id) {
         }
     });
 };
+// Y esta función al final del archivo
+function exportToCSV() {
+    // Como en el admin no tenemos filtros de búsqueda complejos como en el index, 
+    // si quieres filtrar, aquí recogerías el valor de un input si lo tuvieras.
+    // Por ahora, llamamos al controlador directamente:
+    window.location.href = '../api/ExportController.php'; 
+}
