@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AVis - Panel de Administración</title>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
+
 <body class="admin-body">
 
     <header>
@@ -24,29 +26,31 @@
                 <label for="admin-pass"><strong>Contraseña:</strong></label><br>
                 <input type="password" id="admin-pass" style="width: 100%; padding: 8px; margin-top: 5px;">
             </div>
-            <button id="btn-login" style="width: 100%; padding: 10px; background-color: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+            <button id="btn-login"
+                style="width: 100%; padding: 10px; background-color: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
                 Entrar
             </button>
-            <p id="login-error" style="color: red; display: none; text-align: center; margin-top: 10px;">Credenciales incorrectas</p>
+            <p id="login-error" style="color: red; display: none; text-align: center; margin-top: 10px;">Credenciales
+                incorrectas</p>
         </div>
     </div>
 
     <div id="dashboard-section" class="admin-dashboard" style="display: none; padding: 20px;">
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
             <h2>Gestión de Accidentes</h2>
-            <div>
-                <button id="btn-add-new" style="padding: 10px 15px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;">
-                    + Añadir Accidente
-                </button>
-                <button id="btn-logout" style="padding: 10px 15px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;margin-right: 10px;">
-                    Cerrar Sesión
-                <button id="btn-export-csv" style="padding: 10px 15px; background-color: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer;">📥 Exportar CSV</button>
-                </button>
+            <div style="display: flex; gap: 10px;">
+                <button id="btn-add-new"
+                    style="padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer;">+
+                    Añadir</button>
+                <button id="btn-logout"
+                    style="padding: 10px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar
+                    Sesión</button>
             </div>
         </div>
 
-        <div style="overflow-x: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+        <div
+            style="overflow-x: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             <table class="admin-table" style="width: 100%; border-collapse: collapse;">
                 <thead style="background-color: #2c3e50; color: white;">
                     <tr>
@@ -63,33 +67,44 @@
                     </tr>
                 </tbody>
             </table>
-            <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-bottom: 20px;">
-        <button id="btn-prev-page" style="padding: 8px 16px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">⬅️ Anterior</button>
-        
-        <span style="font-size: 16px; font-weight: bold; color: #2c3e50;">
-            Página <span id="current-page-text">1</span>
-        </span>
-        
-        <button id="btn-next-page" style="padding: 8px 16px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Siguiente ➡️</button>
-    </div>
+            <div
+                style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-bottom: 20px;">
+                <button id="btn-prev-page"
+                    style="padding: 8px 16px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">⬅️
+                    Anterior</button>
+
+                <span style="font-size: 16px; font-weight: bold; color: #2c3e50;">
+                    Página <span id="current-page-text">1</span>
+                </span>
+
+                <button id="btn-next-page"
+                    style="padding: 8px 16px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Siguiente
+                    ➡️</button>
+            </div>
         </div>
     </div>
 
     <script src="../assets/js/admin.js"></script>
 
-    <div id="add-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;">
-        <div style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+    <div id="add-modal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;">
+        <div
+            style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
             <h3 style="margin-top: 0;">➕ Añadir Nuevo Accidente</h3>
-            
+
             <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
-                <input type="text" id="add-id" placeholder="ID (ej. A-NUEVO)" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                <input type="datetime-local" id="add-time" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                
+                <input type="text" id="add-id" placeholder="ID (ej. A-NUEVO)"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="datetime-local" id="add-time"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+
                 <div style="display: flex; gap: 10px;">
-                    <input type="number" step="any" id="add-lat" placeholder="Latitud (ej. 37.7)" style="padding: 8px; width: 50%; border: 1px solid #ccc; border-radius: 4px;">
-                    <input type="number" step="any" id="add-lng" placeholder="Longitud (ej. -122.4)" style="padding: 8px; width: 50%; border: 1px solid #ccc; border-radius: 4px;">
+                    <input type="number" step="any" id="add-lat" placeholder="Latitud (ej. 37.7)"
+                        style="padding: 8px; width: 50%; border: 1px solid #ccc; border-radius: 4px;">
+                    <input type="number" step="any" id="add-lng" placeholder="Longitud (ej. -122.4)"
+                        style="padding: 8px; width: 50%; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
-                
+
                 <select id="add-severity" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                     <option value="">Severidad...</option>
                     <option value="1">Nivel 1</option>
@@ -97,17 +112,23 @@
                     <option value="3">Nivel 3</option>
                     <option value="4">Nivel 4</option>
                 </select>
-                
-                <input type="text" id="add-city" placeholder="Ciudad (ej. San Francisco)" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                <input type="text" id="add-state" placeholder="Estado (ej. CA)" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                <input type="text" id="add-weather" placeholder="Clima (ej. Clear)" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+
+                <input type="text" id="add-city" placeholder="Ciudad (ej. San Francisco)"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="text" id="add-state" placeholder="Estado (ej. CA)"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                <input type="text" id="add-weather" placeholder="Clima (ej. Clear)"
+                    style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
             </div>
-            
+
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                <button id="btn-cancel-add" style="padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; background: #95a5a6; color: white;">Cancelar</button>
-                <button id="btn-save-add" style="padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar</button>
+                <button id="btn-cancel-add"
+                    style="padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; background: #95a5a6; color: white;">Cancelar</button>
+                <button id="btn-save-add"
+                    style="padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar</button>
             </div>
         </div>
     </div>
 </body>
+
 </html>

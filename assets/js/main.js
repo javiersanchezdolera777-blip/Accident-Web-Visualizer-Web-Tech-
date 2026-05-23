@@ -2,11 +2,11 @@
 // VARIABLES GLOBALES
 // ==========================================
 let map;
-let markerGroup; 
-let barChartInstance = null; 
-let pieChartInstance = null; 
-let currentAccidentsData = []; 
-let currentStatsData = null; 
+let markerGroup;
+let barChartInstance = null;
+let pieChartInstance = null;
+let currentAccidentsData = [];
+let currentStatsData = null;
 
 Chart.register(ChartDataLabels);
 
@@ -16,8 +16,8 @@ Chart.register(ChartDataLabels);
 document.addEventListener('DOMContentLoaded', () => {
     console.log("¡Iniciando AVis Frontend!");
     initMap();
-    fetchAccidentsData(); 
-    fetchStatsData(); 
+    fetchAccidentsData();
+    fetchStatsData();
 
     document.getElementById('btn-apply-filters').addEventListener('click', () => {
         const stateValue = document.getElementById('filter-state').value;
@@ -25,17 +25,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const weatherValue = document.getElementById('filter-weather').value;
         const dateFromValue = document.getElementById('filter-date-from').value;
         const dateToValue = document.getElementById('filter-date-to').value;
-        
+
         const params = new URLSearchParams();
         if (stateValue !== "") params.append('state', stateValue);
         if (severityValue !== "") params.append('severity', severityValue);
         if (weatherValue !== "") params.append('weather', weatherValue);
         if (dateFromValue !== "") params.append('date_from', dateFromValue);
         if (dateToValue !== "") params.append('date_to', dateToValue);
-        
+
         const queryString = params.toString() ? '?' + params.toString() : '';
         fetchAccidentsData(queryString);
-        fetchStatsData(queryString); 
+        fetchStatsData(queryString);
     });
 
     document.getElementById('btn-export-csv').addEventListener('click', exportToCSV);
@@ -49,13 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
 function initMap() {
     map = L.map('map').setView([37.8, -96], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-    markerGroup = L.layerGroup().addTo(map); 
+    markerGroup = L.layerGroup().addTo(map);
 }
 
 function fetchAccidentsData(queryParams = '') {
     fetch('api/AccidentsController.php' + queryParams)
         .then(response => {
-            if (response.status === 404) return []; 
+            if (response.status === 404) return [];
             if (!response.ok) throw new Error('Error red');
             return response.json();
         })
@@ -69,12 +69,12 @@ function fetchAccidentsData(queryParams = '') {
 
 function plotDataOnMap(accidents) {
     if (!Array.isArray(accidents)) return;
-    markerGroup.clearLayers(); 
+    markerGroup.clearLayers();
     accidents.forEach(accident => {
-        const lat = accident.Start_Lat || accident.lat; 
+        const lat = accident.Start_Lat || accident.lat;
         const lng = accident.Start_Lng || accident.lng;
         if (lat && lng) {
-            const marker = L.marker([lat, lng]).addTo(markerGroup); 
+            const marker = L.marker([lat, lng]).addTo(markerGroup);
             marker.bindPopup(`<strong>Estado:</strong> ${accident.State || 'N/A'}<br><strong>Severidad:</strong> Nivel ${accident.Severity || 'N/A'}`);
         }
     });
@@ -84,7 +84,7 @@ function fetchStatsData(queryParams = '') {
     fetch('api/StatsController.php' + queryParams)
         .then(response => response.status === 404 ? null : response.json())
         .then(statsData => {
-            currentStatsData = statsData; 
+            currentStatsData = statsData;
             if (statsData) initCharts(statsData);
         })
         .catch(err => console.error("❌ Error API Stats:", err));
@@ -100,12 +100,12 @@ function initCharts(statsData) {
     barChartInstance = new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: statsData.states.map(item => item.state), 
+            labels: statsData.states.map(item => item.state),
             datasets: [{ label: 'Accidentes', data: statsData.states.map(item => item.total), backgroundColor: '#3498db' }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { 
+            plugins: {
                 title: { display: true, text: 'Accidentes por Estado' },
                 datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 11 }, color: '#333' }
             }
@@ -124,9 +124,7 @@ function initCharts(statsData) {
     });
 }
 
-// ==========================================
 // EXPORTACIONES FINALES (JAVIKI BONUS TRACK)
-// ==========================================
 function exportToCSV() {
     const stateValue = document.getElementById('filter-state').value;
     const severityValue = document.getElementById('filter-severity').value;
@@ -139,7 +137,7 @@ function exportToCSV() {
     if (weatherValue) params.append('weather', weatherValue);
     if (dateFromValue) params.append('date_from', dateFromValue);
     if (dateToValue) params.append('date_to', dateToValue);
-    
+
     let url = 'api/ExportController.php';
     if (params.toString()) url += '?' + params.toString();
     window.location.href = url;
