@@ -125,7 +125,32 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    document.getElementById('btn-export-csv').addEventListener('click', exportToCSV);
+    // --- LÓGICA DEL INPUT DE PAGINACIÓN ---
+    const pageInput = document.getElementById('page-input');
+    if (pageInput) pageInput.value = currentPage;
+    const btnGoPage = document.getElementById('btn-go-page');
+
+    if (pageInput && btnGoPage) {
+        const goToPage = () => {
+            let newPage = parseInt(pageInput.value);
+            if (newPage >= 1) {
+                currentPage = newPage;
+                fetchAdminData();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                alert("⚠️ Por favor, introduce un número de página válido mayor que 0.");
+                pageInput.value = currentPage; // Restauramos el valor si escribe una tontería
+            }
+        };
+
+        // Escuchar el clic en el botón "Ir"
+        btnGoPage.addEventListener('click', goToPage);
+
+        // Escuchar la tecla "Enter" dentro del input
+        pageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') goToPage();
+        });
+    }
 });
 
 function fetchAdminData() {
@@ -179,8 +204,8 @@ function fetchAdminData() {
                 tableBody.appendChild(row);
             });
 
-            const pageText = document.getElementById('current-page-text');
-            if (pageText) pageText.innerText = currentPage;
+            const pageInput = document.getElementById('page-input');
+            if (pageInput) pageInput.value = currentPage;
 
             const btnPrev = document.getElementById('btn-prev-page');
             if (btnPrev) {
@@ -243,10 +268,3 @@ window.deleteAccident = function (id) {
         })
         .catch(err => alert("❌ Error crítico de red."));
 };
-// Y esta función al final del archivo
-function exportToCSV() {
-    // Como en el admin no tenemos filtros de búsqueda complejos como en el index, 
-    // si quieres filtrar, aquí recogerías el valor de un input si lo tuvieras.
-    // Por ahora, llamamos al controlador directamente:
-    window.location.href = '../api/ExportController.php';
-}

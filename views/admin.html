@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AVis - Panel de Administración</title>
+    <title>AVis - Adminitration Panel</title>
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 
 <body class="admin-body">
 
     <header>
-        <h1>🛡️ AVis - Zona de Administración</h1>
+        <h1>🛡️ AVis - Administration Zone</h1>
         <a href="../index.html" class="admin-btn" style="background-color: #7f8c8d;">Volver al Mapa</a>
     </header>
 
@@ -19,11 +19,11 @@
         <div class="login-card">
             <h2>Iniciar Sesión</h2>
             <div style="margin-bottom: 15px;">
-                <label for="admin-user"><strong>Usuario:</strong></label><br>
+                <label for="admin-user"><strong>User:</strong></label><br>
                 <input type="text" id="admin-user" style="width: 100%; padding: 8px; margin-top: 5px;">
             </div>
             <div style="margin-bottom: 20px;">
-                <label for="admin-pass"><strong>Contraseña:</strong></label><br>
+                <label for="admin-pass"><strong>Password:</strong></label><br>
                 <input type="password" id="admin-pass" style="width: 100%; padding: 8px; margin-top: 5px;">
             </div>
             <button id="btn-login"
@@ -67,19 +67,18 @@
                     </tr>
                 </tbody>
             </table>
-            <div
-                style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding-bottom: 20px;">
-                <button id="btn-prev-page"
-                    style="padding: 8px 16px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">⬅️
-                    Anterior</button>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">
+                <button id="btn-prev-page" style="padding: 5px 15px; cursor: pointer;">◀ Anterior</button>
 
-                <span style="font-size: 16px; font-weight: bold; color: #2c3e50;">
-                    Página <span id="current-page-text">1</span>
+                <span>
+                    Página
+                    <input type="number" id="page-input" value="1" min="1"
+                        style="width: 60px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 5px;">
                 </span>
+                <button id="btn-go-page"
+                    style="padding: 5px 10px; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer;">Ir</button>
 
-                <button id="btn-next-page"
-                    style="padding: 8px 16px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Siguiente
-                    ➡️</button>
+                <button id="btn-next-page" style="padding: 5px 15px; cursor: pointer;">Siguiente ▶</button>
             </div>
         </div>
     </div>

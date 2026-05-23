@@ -2,11 +2,12 @@
 // VARIABLES GLOBALES
 // ==========================================
 let map;
-let markerGroup; 
-let barChartInstance = null; 
-let pieChartInstance = null; 
-let currentAccidentsData = []; 
-let currentStatsData = null; 
+let markerGroup;
+let barChartInstance = null;
+let pieChartInstance = null;
+let lineChartInstance = null;
+let currentAccidentsData = [];
+let currentStatsData = null;
 
 Chart.register(ChartDataLabels);
 
@@ -16,8 +17,8 @@ Chart.register(ChartDataLabels);
 document.addEventListener('DOMContentLoaded', () => {
     console.log("¡Iniciando AVis Frontend!");
     initMap();
-    fetchAccidentsData(); 
-    fetchStatsData(); 
+    fetchAccidentsData();
+    fetchStatsData();
 
     document.getElementById('btn-apply-filters').addEventListener('click', () => {
         const stateValue = document.getElementById('filter-state').value;
@@ -25,22 +26,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const weatherValue = document.getElementById('filter-weather').value;
         const dateFromValue = document.getElementById('filter-date-from').value;
         const dateToValue = document.getElementById('filter-date-to').value;
-        
+
         const params = new URLSearchParams();
         if (stateValue !== "") params.append('state', stateValue);
         if (severityValue !== "") params.append('severity', severityValue);
         if (weatherValue !== "") params.append('weather', weatherValue);
         if (dateFromValue !== "") params.append('date_from', dateFromValue);
         if (dateToValue !== "") params.append('date_to', dateToValue);
-        
+
         const queryString = params.toString() ? '?' + params.toString() : '';
         fetchAccidentsData(queryString);
-        fetchStatsData(queryString); 
+        fetchStatsData(queryString);
     });
 
     document.getElementById('btn-export-csv').addEventListener('click', exportToCSV);
     document.getElementById('btn-export-webp').addEventListener('click', exportToWebP);
     document.getElementById('btn-export-svg').addEventListener('click', exportToSVG);
+    document.getElementById('btn-export-line').addEventListener('click', exportToPDF);
+
 });
 
 // ==========================================
@@ -49,13 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
 function initMap() {
     map = L.map('map').setView([37.8, -96], 4);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
-    markerGroup = L.layerGroup().addTo(map); 
+    markerGroup = L.layerGroup().addTo(map);
 }
 
 function fetchAccidentsData(queryParams = '') {
     fetch('api/AccidentsController.php' + queryParams)
         .then(response => {
-            if (response.status === 404) return []; 
+            if (response.status === 404) return [];
             if (!response.ok) throw new Error('Error red');
             return response.json();
         })
@@ -69,12 +72,12 @@ function fetchAccidentsData(queryParams = '') {
 
 function plotDataOnMap(accidents) {
     if (!Array.isArray(accidents)) return;
-    markerGroup.clearLayers(); 
+    markerGroup.clearLayers();
     accidents.forEach(accident => {
-        const lat = accident.Start_Lat || accident.lat; 
+        const lat = accident.Start_Lat || accident.lat;
         const lng = accident.Start_Lng || accident.lng;
         if (lat && lng) {
-            const marker = L.marker([lat, lng]).addTo(markerGroup); 
+            const marker = L.marker([lat, lng]).addTo(markerGroup);
             marker.bindPopup(`<strong>Estado:</strong> ${accident.State || 'N/A'}<br><strong>Severidad:</strong> Nivel ${accident.Severity || 'N/A'}`);
         }
     });
@@ -84,7 +87,7 @@ function fetchStatsData(queryParams = '') {
     fetch('api/StatsController.php' + queryParams)
         .then(response => response.status === 404 ? null : response.json())
         .then(statsData => {
-            currentStatsData = statsData; 
+            currentStatsData = statsData;
             if (statsData) initCharts(statsData);
         })
         .catch(err => console.error("❌ Error API Stats:", err));
@@ -100,12 +103,12 @@ function initCharts(statsData) {
     barChartInstance = new Chart(ctxBar, {
         type: 'bar',
         data: {
-            labels: statsData.states.map(item => item.state), 
+            labels: statsData.states.map(item => item.state),
             datasets: [{ label: 'Accidentes', data: statsData.states.map(item => item.total), backgroundColor: '#3498db' }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            plugins: { 
+            plugins: {
                 title: { display: true, text: 'Accidentes por Estado' },
                 datalabels: { anchor: 'end', align: 'top', font: { weight: 'bold', size: 11 }, color: '#333' }
             }
@@ -122,7 +125,67 @@ function initCharts(statsData) {
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Distribución de Severidad' } } }
     });
+
+    // --- GRÁFICO DE LÍNEAS (Evolución por Quincenas) ---
+    const ctxLine = document.getElementById('lineChart').getContext('2d');
+    if (lineChartInstance) lineChartInstance.destroy();
+
+    // 1. Agrupar los accidentes por quincena
+    const accidentsByFortnight = {};
+    if (currentAccidentsData && currentAccidentsData.length > 0) {
+        currentAccidentsData.forEach(acc => {
+            let time = acc.Start_Time || acc.start_time;
+            if (time) {
+                // Extraemos la fecha "YYYY-MM-DD" y la partimos en trozos
+                let dateStr = time.split(' ')[0].split('T')[0];
+                let [year, month, day] = dateStr.split('-');
+
+                // Si el día es 15 o menos, es Q1. Si es mayor, es Q2.
+                let quincena = parseInt(day) <= 15 ? 'Q1' : 'Q2';
+
+                // Creamos una clave única que se pueda ordenar alfabéticamente (Ej: "2023-05 Q1")
+                let key = `${year}-${month} ${quincena}`;
+
+                accidentsByFortnight[key] = (accidentsByFortnight[key] || 0) + 1;
+            }
+        });
+    }
+
+    // 2. Ordenar las fechas de más antigua a más reciente
+    const sortedFortnights = Object.keys(accidentsByFortnight).sort();
+    const fortnightValues = sortedFortnights.map(key => accidentsByFortnight[key]);
+
+    // 3. Dibujar el nuevo gráfico de evolución quincenal
+    lineChartInstance = new Chart(ctxLine, {
+        type: 'line',
+        data: {
+            labels: sortedFortnights, // Las etiquetas ahora dirán cosas como "2023-05 Q1"
+            datasets: [{
+                label: 'Accidentes por Quincena',
+                data: fortnightValues,
+                borderColor: '#2ecc71', // Verde esmeralda
+                backgroundColor: 'rgba(46, 204, 113, 0.2)', // Fondo semitransparente
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4, // Curvas suaves
+                pointRadius: 4,
+                pointBackgroundColor: '#27ae60'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: 'Evolución Temporal (Quincenal)' },
+                datalabels: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
 }
+
 
 // ==========================================
 // EXPORTACIONES FINALES (JAVIKI BONUS TRACK)
@@ -139,7 +202,7 @@ function exportToCSV() {
     if (weatherValue) params.append('weather', weatherValue);
     if (dateFromValue) params.append('date_from', dateFromValue);
     if (dateToValue) params.append('date_to', dateToValue);
-    
+
     let url = 'api/ExportController.php';
     if (params.toString()) url += '?' + params.toString();
     window.location.href = url;
@@ -155,18 +218,72 @@ function exportToWebP() {
 }
 
 function exportToSVG() {
-    if (!currentStatsData || !currentStatsData.states) return;
-    const states = currentStatsData.states.map(item => item.state);
-    const values = currentStatsData.states.map(item => item.total);
+    // 1. Verificamos que tengamos los datos de severidad (la tarta)
+    if (!currentStatsData || !currentStatsData.severity) return alert("Carga los datos primero.");
+
+    // 2. Extraemos las etiquetas (Nivel 1, Nivel 2...) y los totales
+    const severities = currentStatsData.severity.map(item => 'Nivel ' + item.level);
+    const values = currentStatsData.severity.map(item => item.total);
     const maxValue = Math.max(...values, 1);
-    let svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${states.length * 40 + 80}"><rect width="100%" height="100%" fill="#f4f4f9"/><text x="20" y="40" font-family="Arial" font-size="22" font-weight="bold" fill="#2c3e50">Accidentes por Estado</text>`;
-    states.forEach((state, i) => {
-        const w = (values[i] / maxValue) * 400, y = 80 + (i * 40);
-        svgString += `<text x="20" y="${y + 15}" font-family="Arial" font-size="14" fill="#333">${state}</text><rect x="60" y="${y}" width="${w}" height="20" fill="#3498db" rx="4"/><text x="${60 + w + 10}" y="${y + 15}" font-family="Arial" font-size="14" font-weight="bold" fill="#e74c3c">${values[i]}</text>`;
+
+    // 3. Colores idénticos a los que usas en el pieChart
+    const colors = ['#f1c40f', '#e67e22', '#e74c3c', '#8b0000'];
+
+    // 4. Construimos el documento SVG
+    let svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${severities.length * 40 + 80}">
+        <rect width="100%" height="100%" fill="#f4f4f9"/>
+        <text x="20" y="40" font-family="Arial" font-size="22" font-weight="bold" fill="#2c3e50">Distribución de Severidad</text>`;
+
+    // 5. Dibujamos las barras con los colores de la tarta
+    severities.forEach((sev, i) => {
+        const w = (values[i] / maxValue) * 400; // Calculamos el ancho de la barra
+        const y = 80 + (i * 40); // Calculamos la posición vertical
+
+        svgString += `
+            <text x="20" y="${y + 15}" font-family="Arial" font-size="14" fill="#333">${sev}</text>
+            <rect x="80" y="${y}" width="${w}" height="20" fill="${colors[i]}" rx="4"/>
+            <text x="${80 + w + 10}" y="${y + 15}" font-family="Arial" font-size="14" font-weight="bold" fill="#2c3e50">${values[i]}</text>
+        `;
     });
+
     svgString += `</svg>`;
+
+    // 6. Forzamos la descarga del archivo
     const link = document.createElement("a");
     link.href = URL.createObjectURL(new Blob([svgString], { type: 'image/svg+xml;charset=utf-8;' }));
-    link.download = "grafico.svg";
+    link.download = "grafica_severidad.svg";
     link.click();
+}
+
+function exportToPDF() {
+    const canvas = document.getElementById('lineChart');
+    if (!canvas) return;
+
+    // 1. Extraemos la imagen del canvas
+    const imgData = canvas.toDataURL("image/png", 1.0);
+
+    // 2. Abrimos una pestaña limpia e inyectamos la imagen
+    let pdfWindow = window.open("", "_blank");
+    pdfWindow.document.write(`
+        <html>
+            <head>
+                <title>Exportar a PDF - AVis Dashboard</title>
+                <style>
+                    body { text-align: center; font-family: Arial; padding: 20px; }
+                    img { max-width: 100%; height: auto; border: 1px solid #ccc; }
+                </style>
+            </head>
+            <body>
+                <h2>Evolución de Accidentes</h2>
+                <img src="${imgData}" />
+                <script>
+                    // Esperamos medio segundo a que pinte la imagen y lanzamos el diálogo de impresión
+                    setTimeout(() => { 
+                        window.print(); 
+                        window.close(); 
+                    }, 500);
+                </script>
+            </body>
+        </html>
+    `);
 }

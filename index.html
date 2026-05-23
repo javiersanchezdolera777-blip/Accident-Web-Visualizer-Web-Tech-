@@ -74,8 +74,10 @@
             <h3>Exportar Datos</h3>
             <div style="display: flex; gap: 10px; flex-direction: column;">
                 <button id="btn-export-csv" style="padding: 10px; cursor: pointer;">Descargar CSV</button>
-                <button id="btn-export-webp" style="padding: 10px; cursor: pointer;">Gráfica en WebP</button>
-                <button id="btn-export-svg" style="padding: 10px; cursor: pointer;">Gráfica en SVG</button>
+                <button id="btn-export-webp" style="padding: 10px; cursor: pointer;">Gráfica en WebP-Por estado</button>
+                <button id="btn-export-svg" style="padding: 10px; cursor: pointer;">Gráfica en SVG-Severidad</button>
+                <button id="btn-export-line" style="padding: 10px; cursor: pointer;">Gráfica en PDF-LineChart</button>
+
             </div>
         </aside>
 
@@ -89,6 +91,9 @@
                 <div class="chart-wrapper">
                     <canvas id="pieChart"></canvas>
                 </div>
+                <div class="chart-wrapper">
+                      <canvas id="lineChart"></canvas>
+                </div>  
             </div>
         </main>
     </div>
