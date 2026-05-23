@@ -1,7 +1,7 @@
 let adminAccidentsData = [];
-let isEditing = false; 
+let isEditing = false;
 let currentPage = 1;
-const itemsPerPage = 50; 
+const itemsPerPage = 50;
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginSection = document.getElementById('login-section');
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedToken) {
         loginSection.style.display = 'none';
         dashboardSection.style.display = 'block';
-        fetchAdminData(); 
+        fetchAdminData();
     }
 
     document.getElementById('btn-login').addEventListener('click', () => {
@@ -24,26 +24,26 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: user, password: pass })
         })
-        .then(response => {
-            if (!response.ok && response.status !== 401) throw new Error('Error en servidor');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                localStorage.setItem('avis_token', data.token);
-                loginSection.style.display = 'none';
-                dashboardSection.style.display = 'block';
-                loginError.style.display = 'none';
-                fetchAdminData(); 
-            } else {
-                loginError.innerText = data.message || "Credenciales incorrectas";
+            .then(response => {
+                if (!response.ok && response.status !== 401) throw new Error('Error en servidor');
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    localStorage.setItem('avis_token', data.token);
+                    loginSection.style.display = 'none';
+                    dashboardSection.style.display = 'block';
+                    loginError.style.display = 'none';
+                    fetchAdminData();
+                } else {
+                    loginError.innerText = data.message || "Credenciales incorrectas";
+                    loginError.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                loginError.innerText = "Error de conexión.";
                 loginError.style.display = 'block';
-            }
-        })
-        .catch(error => {
-            loginError.innerText = "Error de conexión.";
-            loginError.style.display = 'block';
-        });
+            });
     });
 
     document.getElementById('btn-logout').addEventListener('click', () => {
@@ -57,9 +57,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const idInput = document.getElementById('add-id');
 
     document.getElementById('btn-add-new').addEventListener('click', () => {
-        isEditing = false; 
+        isEditing = false;
         modalTitle.innerText = '➕ Añadir Nuevo Accidente';
-        idInput.disabled = false; 
+        idInput.disabled = false;
         document.querySelectorAll('#add-modal input, #add-modal select').forEach(el => el.value = '');
         addModal.style.display = 'flex';
     });
@@ -91,28 +91,32 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(payload)
         })
-        .then(response => {
-            if (response.status === 201 || response.status === 200) {
-                alert(`✅ Accidente ${isEditing ? 'actualizado' : 'creado'} con éxito.`);
-                addModal.style.display = 'none'; 
-                fetchAdminData(); 
-            } else {
-                alert("⚠️ Revisa los campos obligatorios.");
-            }
-        });
+            .then(response => {
+                if (response.status === 201 || response.status === 200) {
+                    alert(`✅ Accidente ${isEditing ? 'actualizado' : 'creado'} con éxito.`);
+                    addModal.style.display = 'none';
+                    fetchAdminData();
+                } else {
+                    alert("⚠️ Revisa los campos obligatorios.");
+                }
+            })
+            .catch(error => {
+                alert("❌ Error de conexión con el servidor.");
+                console.error("Error al guardar:", error);
+            });
     });
 
     const btnNext = document.getElementById('btn-next-page');
-    if(btnNext) {
+    if (btnNext) {
         btnNext.addEventListener('click', () => {
             currentPage++;
             fetchAdminData();
-            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 
     const btnPrev = document.getElementById('btn-prev-page');
-    if(btnPrev) {
+    if (btnPrev) {
         btnPrev.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
@@ -125,18 +129,34 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function fetchAdminData() {
-    fetch(`../api/AccidentsController.php?page=${currentPage}&limit=${itemsPerPage}`)
-        .then(response => response.json())
+    // 1. Añadimos la recogida del token
+    const token = localStorage.getItem('avis_token');
+
+    // 2. Metemos el token en las cabeceras del fetch
+    fetch(`../api/AccidentsController.php?page=${currentPage}&limit=${itemsPerPage}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+    })
+        .then(response => {
+            // 3. Añadimos la validación de seguridad (el aviso "MEDIO" de Javiki)
+            if (response.status === 401) {
+                localStorage.removeItem('avis_token');
+                document.getElementById('dashboard-section').style.display = 'none';
+                document.getElementById('login-section').style.display = 'flex';
+                throw new Error("Token expirado o inválido");
+            }
+            return response.json();
+        })
         .then(accidents => {
-            adminAccidentsData = accidents; 
+            // A PARTIR DE AQUÍ ES EXACTAMENTE TU CÓDIGO INTACTO
+            adminAccidentsData = accidents;
             const tableBody = document.getElementById('admin-table-body');
             tableBody.innerHTML = '';
 
             if (!Array.isArray(accidents) || accidents.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay más accidentes.</td></tr>`;
-                if(currentPage > 1) {
-                     document.getElementById('btn-next-page').disabled = true;
-                     document.getElementById('btn-next-page').style.opacity = '0.5';
+                if (currentPage > 1) {
+                    document.getElementById('btn-next-page').disabled = true;
+                    document.getElementById('btn-next-page').style.opacity = '0.5';
                 }
                 return;
             }
@@ -158,10 +178,10 @@ function fetchAdminData() {
                 `;
                 tableBody.appendChild(row);
             });
-            
+
             const pageText = document.getElementById('current-page-text');
             if (pageText) pageText.innerText = currentPage;
-            
+
             const btnPrev = document.getElementById('btn-prev-page');
             if (btnPrev) {
                 if (currentPage === 1) {
@@ -172,10 +192,14 @@ function fetchAdminData() {
                     btnPrev.style.opacity = '1';
                 }
             }
+        })
+        .catch(error => {
+            // 4. Añadimos el manejo de errores de red al final de todo
+            console.error("Error de conexión al cargar datos:", error);
         });
 }
 
-window.editAccident = function(id) {
+window.editAccident = function (id) {
     const accident = adminAccidentsData.find(a => (a.ID || a.id) === id);
     if (!accident) return alert("❌ Error interno.");
 
@@ -184,10 +208,10 @@ window.editAccident = function(id) {
 
     const idInput = document.getElementById('add-id');
     idInput.value = id;
-    idInput.disabled = true; 
+    idInput.disabled = true;
 
     let time = accident.Start_Time || '';
-    if (time) time = time.replace(' ', 'T').substring(0, 16); 
+    if (time) time = time.replace(' ', 'T').substring(0, 16);
     document.getElementById('add-time').value = time;
 
     document.getElementById('add-lat').value = accident.Start_Lat || accident.lat || '';
@@ -200,27 +224,29 @@ window.editAccident = function(id) {
     document.getElementById('add-modal').style.display = 'flex';
 };
 
-window.deleteAccident = function(id) {
-    const isConfirmed = confirm(`⚠️ ¿Estás seguro de eliminar el accidente con ID: ${id}?`);
-    if (!isConfirmed) return; 
-
+window.deleteAccident = function (id) {
+    if (!confirm(`⚠️ ¿Eliminar ID: ${id}?`)) return;
     const token = localStorage.getItem('avis_token');
+
     fetch('../api/AccidentsController.php', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ id: id }) 
+        body: JSON.stringify({ id: id })
     })
-    .then(response => {
-        if (response.ok || response.status === 200) {
-            alert(`✅ Accidente eliminado.`);
-            fetchAdminData(); 
-        }
-    });
+        .then(res => {
+            if (res.ok) {
+                alert(`✅ Eliminado.`);
+                fetchAdminData();
+            } else {
+                alert(`⚠️ Error al eliminar el accidente.`);
+            }
+        })
+        .catch(err => alert("❌ Error crítico de red."));
 };
 // Y esta función al final del archivo
 function exportToCSV() {
     // Como en el admin no tenemos filtros de búsqueda complejos como en el index, 
     // si quieres filtrar, aquí recogerías el valor de un input si lo tuvieras.
     // Por ahora, llamamos al controlador directamente:
-    window.location.href = '../api/ExportController.php'; 
+    window.location.href = '../api/ExportController.php';
 }
