@@ -12,12 +12,12 @@
 
     <header>
         <h1>🛡️ AVis - Administration Zone</h1>
-        <a href="../index.html" class="admin-btn" style="background-color: #7f8c8d;">Volver al Mapa</a>
+        <a href="../index.html" class="admin-btn" style="background-color: #7f8c8d;">Return to map</a>
     </header>
 
     <div id="login-section" class="login-container">
         <div class="login-card">
-            <h2>Iniciar Sesión</h2>
+            <h2>Login</h2>
             <div style="margin-bottom: 15px;">
                 <label for="admin-user"><strong>User:</strong></label><br>
                 <input type="text" id="admin-user" style="width: 100%; padding: 8px; margin-top: 5px;">
@@ -28,24 +28,22 @@
             </div>
             <button id="btn-login"
                 style="width: 100%; padding: 10px; background-color: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                Entrar
+                Login
             </button>
-            <p id="login-error" style="color: red; display: none; text-align: center; margin-top: 10px;">Credenciales
-                incorrectas</p>
+            <p id="login-error" style="color: red; display: none; text-align: center; margin-top: 10px;">Invalid credentials</p>
         </div>
     </div>
 
     <div id="dashboard-section" class="admin-dashboard" style="display: none; padding: 20px;">
 
         <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-            <h2>Gestión de Accidentes</h2>
+            <h2>Accident Management</h2>
             <div style="display: flex; gap: 10px;">
                 <button id="btn-add-new"
                     style="padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer;">+
-                    Añadir</button>
+                    Add</button>
                 <button id="btn-logout"
-                    style="padding: 10px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Cerrar
-                    Sesión</button>
+                    style="padding: 10px; background-color: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer;">Logout</button>
             </div>
         </div>
 
@@ -55,30 +53,30 @@
                 <thead style="background-color: #2c3e50; color: white;">
                     <tr>
                         <th style="padding: 10px; text-align: left;">ID</th>
-                        <th style="padding: 10px; text-align: left;">Fecha</th>
-                        <th style="padding: 10px; text-align: left;">Estado</th>
-                        <th style="padding: 10px; text-align: left;">Severidad</th>
-                        <th style="padding: 10px; text-align: center;">Acciones</th>
+                        <th style="padding: 10px; text-align: left;">Date</th>
+                        <th style="padding: 10px; text-align: left;">State</th>
+                        <th style="padding: 10px; text-align: left;">Severity</th>
+                        <th style="padding: 10px; text-align: center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody id="admin-table-body">
                     <tr>
-                        <td colspan="5" style="text-align: center; padding: 20px;">Cargando datos...</td>
+                        <td colspan="5" style="text-align: center; padding: 20px;">Loading data...</td>
                     </tr>
                 </tbody>
             </table>
             <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">
-                <button id="btn-prev-page" style="padding: 5px 15px; cursor: pointer;">◀ Anterior</button>
+                <button id="btn-prev-page" style="padding: 5px 15px; cursor: pointer;">◀ Previous</button>
 
                 <span>
-                    Página
+                    Page
                     <input type="number" id="page-input" value="1" min="1"
                         style="width: 60px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 5px;">
                 </span>
                 <button id="btn-go-page"
-                    style="padding: 5px 10px; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer;">Ir</button>
+                    style="padding: 5px 10px; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer;">Go</button>
 
-                <button id="btn-next-page" style="padding: 5px 15px; cursor: pointer;">Siguiente ▶</button>
+                <button id="btn-next-page" style="padding: 5px 15px; cursor: pointer;">Next ▶</button>
             </div>
         </div>
     </div>
@@ -89,27 +87,27 @@
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000;">
         <div
             style="background: white; padding: 25px; border-radius: 8px; width: 400px; max-width: 90%; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-            <h3 style="margin-top: 0;">➕ Añadir Nuevo Accidente</h3>
+            <h3 style="margin-top: 0;">➕ Add New Accident</h3>
 
             <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
-                <input type="text" id="add-id" placeholder="ID (ej. A-NUEVO)"
+                <input type="text" id="add-id" placeholder="ID (e.g., A-NEW)"
                     style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
                 <input type="datetime-local" id="add-time"
                     style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
 
                 <div style="display: flex; gap: 10px;">
-                    <input type="number" step="any" id="add-lat" placeholder="Latitud (ej. 37.7)"
+                    <input type="number" step="any" id="add-lat" placeholder="Latitude (e.g., 37.7)"
                         style="padding: 8px; width: 50%; border: 1px solid #ccc; border-radius: 4px;">
-                    <input type="number" step="any" id="add-lng" placeholder="Longitud (ej. -122.4)"
+                    <input type="number" step="any" id="add-lng" placeholder="Longitude (e.g., -122.4)"
                         style="padding: 8px; width: 50%; border: 1px solid #ccc; border-radius: 4px;">
                 </div>
 
                 <select id="add-severity" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-                    <option value="">Severidad...</option>
-                    <option value="1">Nivel 1</option>
-                    <option value="2">Nivel 2</option>
-                    <option value="3">Nivel 3</option>
-                    <option value="4">Nivel 4</option>
+                    <option value="">Severity...</option>
+                    <option value="1">Level 1</option>
+                    <option value="2">Level 2</option>
+                    <option value="3">Level 3</option>
+                    <option value="4">Level 4</option>
                 </select>
 
                 <input type="text" id="add-city" placeholder="Ciudad (ej. San Francisco)"
@@ -122,9 +120,9 @@
 
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
                 <button id="btn-cancel-add"
-                    style="padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; background: #95a5a6; color: white;">Cancelar</button>
+                    style="padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; background: #95a5a6; color: white;">Cancel</button>
                 <button id="btn-save-add"
-                    style="padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar</button>
+                    style="padding: 8px 15px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Save</button>
             </div>
         </div>
     </div>

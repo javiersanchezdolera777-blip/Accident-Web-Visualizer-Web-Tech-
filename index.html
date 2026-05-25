@@ -20,63 +20,63 @@
     <div class="dashboard-container">
 
         <aside class="sidebar">
-            <h2>Filtros</h2>
+            <h2>Filters</h2>
 
             <div style="margin-bottom: 15px;">
-                <label for="filter-state"><strong>Estado:</strong></label><br>
+                <label for="filter-state"><strong>State:</strong></label><br>
                 <select id="filter-state" style="width: 100%; padding: 5px;">
-                    <option value="">Todos los estados</option>
+                    <option value="">All states</option>
                     <option value="CA">California (CA)</option>
                     <option value="TX">Texas (TX)</option>
                     <option value="FL">Florida (FL)</option>
-                    <option value="NY">Nueva York (NY)</option>
+                    <option value="NY">New York (NY)</option>
                 </select>
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label for="filter-severity"><strong>Severidad:</strong></label><br>
+                <label for="filter-severity"><strong>Severity:</strong></label><br>
                 <select id="filter-severity" style="width: 100%; padding: 5px;">
-                    <option value="">Cualquier nivel</option>
-                    <option value="1">Nivel 1 (Leve)</option>
-                    <option value="2">Nivel 2 (Moderado)</option>
-                    <option value="3">Nivel 3 (Grave)</option>
-                    <option value="4">Nivel 4 (Muy Grave)</option>
+                    <option value="">Any level</option>
+                    <option value="1">Level 1 (Mild)</option>
+                    <option value="2">Level 2 (Moderate)</option>
+                    <option value="3">Level 3 (Severe)</option>
+                    <option value="4">Level 4 (Very Severe)</option>
                 </select>
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label for="filter-weather"><strong>Clima:</strong></label><br>
+                <label for="filter-weather"><strong>Weather:</strong></label><br>
                 <select id="filter-weather" style="width: 100%; padding: 5px;">
-                    <option value="">Cualquier clima</option>
-                    <option value="Clear">Despejado (Clear)</option>
-                    <option value="Overcast">Nublado (Overcast)</option>
-                    <option value="Light Rain">Lluvia Ligera</option>
-                    <option value="Mostly Cloudy">Mayormente Nublado</option>
+                    <option value="">Any weather</option>
+                    <option value="Clear">Clear</option>
+                    <option value="Overcast">Overcast</option>
+                    <option value="Light Rain">Light Rain</option>
+                    <option value="Mostly Cloudy">Mostly Cloudy</option>
                 </select>
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label for="filter-date-from"><strong>Desde:</strong></label><br>
+                <label for="filter-date-from"><strong>From:</strong></label><br>
                 <input type="date" id="filter-date-from" style="width: 100%; padding: 5px;">
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label for="filter-date-to"><strong>Hasta:</strong></label><br>
+                <label for="filter-date-to"><strong>To:</strong></label><br>
                 <input type="date" id="filter-date-to" style="width: 100%; padding: 5px;">
             </div>
             <button id="btn-apply-filters"
                 style="width: 100%; padding: 10px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                Aplicar Filtros
+                Apply Filters
             </button>
 
             <hr style="margin: 20px 0;">
 
-            <h3>Exportar Datos</h3>
+            <h3>Export Data</h3>
             <div style="display: flex; gap: 10px; flex-direction: column;">
-                <button id="btn-export-csv" style="padding: 10px; cursor: pointer;">Descargar CSV</button>
-                <button id="btn-export-webp" style="padding: 10px; cursor: pointer;">Gráfica en WebP-Por estado</button>
-                <button id="btn-export-svg" style="padding: 10px; cursor: pointer;">Gráfica en SVG-Severidad</button>
-                <button id="btn-export-line" style="padding: 10px; cursor: pointer;">Gráfica en PDF-LineChart</button>
+                <button id="btn-export-csv" style="padding: 10px; cursor: pointer;">Download CSV</button>
+                <button id="btn-export-webp" style="padding: 10px; cursor: pointer;">WebP Chart by State</button>
+                <button id="btn-export-svg" style="padding: 10px; cursor: pointer;">SVG Chart by Severity</button>
+                <button id="btn-export-line" style="padding: 10px; cursor: pointer;">PDF Line Chart</button>
 
             </div>
         </aside>
