@@ -8,7 +8,11 @@ class AccidentModel
         $this->conn = $db;
     }
 
-    // Función inicial para leer un lote de accidentes de prueba
+    // Con esto, eliminamos los warning pq ya sabe qué tipo de dato debe devolver
+    /**
+     * @param array $filtros
+     * @return mysqli_result|bool
+     */
     public function getAccidents($filtros = array())
     {
         // Empezamos con una consulta base (1=1 es un truco para poder concatenar los AND fácilmente)

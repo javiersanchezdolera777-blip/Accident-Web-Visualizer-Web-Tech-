@@ -7,6 +7,9 @@ class Database
     private $password = "";       // Sin contraseña por defecto
     public $conn;
 
+    /** Con esto, eliminamos los warning pq ya sabe qué tipo de dato debe devolver
+     * @return mysqli|null
+     */
     public function getConnection()
     {
         $this->conn = null;
