@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify({ username: user, password: pass })
         })
             .then(response => {
-                if (!response.ok && response.status !== 401) throw new Error('Error en servidor');
+                if (!response.ok && response.status !== 401) throw new Error('Error in server response');
                 return response.json();
             })
             .then(data => {
@@ -36,12 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     loginError.style.display = 'none';
                     fetchAdminData();
                 } else {
-                    loginError.innerText = data.message || "Credenciales incorrectas";
+                    loginError.innerText = data.message || "Incorrect username or password.";
                     loginError.style.display = 'block';
                 }
             })
             .catch(error => {
-                loginError.innerText = "Error de conexión.";
+                loginError.innerText = "Conexion error.";
                 loginError.style.display = 'block';
             });
     });
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('btn-add-new').addEventListener('click', () => {
         isEditing = false;
-        modalTitle.innerText = '➕ Añadir Nuevo Accidente';
+        modalTitle.innerText = '➕ Add New Accident';
         idInput.disabled = false;
         document.querySelectorAll('#add-modal input, #add-modal select').forEach(el => el.value = '');
         addModal.style.display = 'flex';
@@ -93,16 +93,16 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => {
                 if (response.status === 201 || response.status === 200) {
-                    alert(`✅ Accidente ${isEditing ? 'actualizado' : 'creado'} con éxito.`);
+                    alert(`✅ Accident ${isEditing ? 'updated' : 'created'} successfully.`);
                     addModal.style.display = 'none';
                     fetchAdminData();
                 } else {
-                    alert("⚠️ Revisa los campos obligatorios.");
+                    alert("⚠️ Review the fields and try again.");
                 }
             })
             .catch(error => {
-                alert("❌ Error de conexión con el servidor.");
-                console.error("Error al guardar:", error);
+                alert("❌ Connection error with the server.");
+                console.error("Error saving:", error);
             });
     });
 
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchAdminData();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
-                alert("⚠️ Por favor, introduce un número de página válido mayor que 0.");
+                alert("⚠️ Please enter a valid page number greater than 0.");
                 pageInput.value = currentPage; // Restauramos el valor si escribe una tontería
             }
         };
@@ -195,7 +195,7 @@ function fetchAdminData() {
                     <td style="padding: 10px;">${accident.ID || accident.id || 'N/A'}</td>
                     <td style="padding: 10px;">${accident.Start_Time || 'N/A'}</td>
                     <td style="padding: 10px;">${accident.State || 'N/A'}</td>
-                    <td style="padding: 10px;"><span style="font-weight:bold;">Nivel ${accident.Severity || 'N/A'}</span></td>
+                    <td style="padding: 10px;"><span style="font-weight:bold;">Level ${accident.Severity || 'N/A'}</span></td>
                     <td style="padding: 10px; text-align: center;">
                         <button class="btn-edit" onclick="editAccident('${accident.ID || accident.id}')" style="background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px;">✏️ Edit</button>
                         <button class="btn-delete" onclick="deleteAccident('${accident.ID || accident.id}')" style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">🗑️ Delete</button>
@@ -229,7 +229,7 @@ window.editAccident = function (id) {
     if (!accident) return alert("❌ Error interno.");
 
     isEditing = true;
-    document.querySelector('#add-modal h3').innerText = '✏️ Editar Accidente';
+    document.querySelector('#add-modal h3').innerText = '✏️ Edit Accident';
 
     const idInput = document.getElementById('add-id');
     idInput.value = id;
@@ -260,11 +260,11 @@ window.deleteAccident = function (id) {
     })
         .then(res => {
             if (res.ok) {
-                alert(`✅ Eliminado.`);
+                alert(`✅ Deleted successfully.`);
                 fetchAdminData();
             } else {
-                alert(`⚠️ Error al eliminar el accidente.`);
+                alert(`⚠️ Error deleting accident.`);
             }
         })
-        .catch(err => alert("❌ Error crítico de red."));
+        .catch(err => alert("❌ Critical network error."));
 };

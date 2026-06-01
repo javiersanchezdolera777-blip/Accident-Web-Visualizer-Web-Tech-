@@ -1,6 +1,4 @@
-// ==========================================
-// VARIABLES GLOBALES
-// ==========================================
+
 let map;
 let markerGroup;
 let barChartInstance = null;
@@ -11,9 +9,7 @@ let currentStatsData = null;
 
 Chart.register(ChartDataLabels);
 
-// ==========================================
 // INICIALIZACIÓN
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     console.log("¡Iniciando AVis Frontend!");
     initMap();
@@ -141,10 +137,10 @@ function initCharts(statsData) {
                 let [year, month, day] = dateStr.split('-');
 
                 // Si el día es 15 o menos, es Q1. Si es mayor, es Q2.
-                let quincena = parseInt(day) <= 15 ? 'Q1' : 'Q2';
+                let fortnight = parseInt(day) <= 15 ? 'Q1' : 'Q2';
 
                 // Creamos una clave única que se pueda ordenar alfabéticamente (Ej: "2023-05 Q1")
-                let key = `${year}-${month} ${quincena}`;
+                let key = `${year}-${month} ${fortnight}`;
 
                 accidentsByFortnight[key] = (accidentsByFortnight[key] || 0) + 1;
             }
@@ -161,7 +157,7 @@ function initCharts(statsData) {
         data: {
             labels: sortedFortnights, // Las etiquetas ahora dirán cosas como "2023-05 Q1"
             datasets: [{
-                label: 'Accidentes por Quincena',
+                label: 'Accidents per fortnight',
                 data: fortnightValues,
                 borderColor: '#2ecc71', // Verde esmeralda
                 backgroundColor: 'rgba(46, 204, 113, 0.2)', // Fondo semitransparente
@@ -176,7 +172,7 @@ function initCharts(statsData) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                title: { display: true, text: 'Evolución Temporal (Quincenal)' },
+                title: { display: true, text: 'Evolution (fortnight)' },
                 datalabels: { display: false }
             },
             scales: {
@@ -187,9 +183,7 @@ function initCharts(statsData) {
 }
 
 
-// ==========================================
-// EXPORTACIONES FINALES (JAVIKI BONUS TRACK)
-// ==========================================
+
 function exportToCSV() {
     const stateValue = document.getElementById('filter-state').value;
     const severityValue = document.getElementById('filter-severity').value;
@@ -219,10 +213,10 @@ function exportToWebP() {
 
 function exportToSVG() {
     // 1. Verificamos que tengamos los datos de severidad (la tarta)
-    if (!currentStatsData || !currentStatsData.severity) return alert("Carga los datos primero.");
+    if (!currentStatsData || !currentStatsData.severity) return alert("Load the data first.");
 
-    // 2. Extraemos las etiquetas (Nivel 1, Nivel 2...) y los totales
-    const severities = currentStatsData.severity.map(item => 'Nivel ' + item.level);
+    // 2. Extraemos las etiquetas (Level 1, Level 2...) y los totales
+    const severities = currentStatsData.severity.map(item => 'Level ' + item.level);
     const values = currentStatsData.severity.map(item => item.total);
     const maxValue = Math.max(...values, 1);
 
@@ -232,7 +226,7 @@ function exportToSVG() {
     // 4. Construimos el documento SVG
     let svgString = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="${severities.length * 40 + 80}">
         <rect width="100%" height="100%" fill="#f4f4f9"/>
-        <text x="20" y="40" font-family="Arial" font-size="22" font-weight="bold" fill="#2c3e50">Distribución de Severidad</text>`;
+        <text x="20" y="40" font-family="Arial" font-size="22" font-weight="bold" fill="#2c3e50">Distribution of Severity</text>`;
 
     // 5. Dibujamos las barras con los colores de la tarta
     severities.forEach((sev, i) => {
@@ -274,7 +268,7 @@ function exportToPDF() {
                 </style>
             </head>
             <body>
-                <h2>Evolución de Accidentes</h2>
+                <h2>Accidents evolution</h2>
                 <img src="${imgData}" />
                 <script>
                     // Esperamos medio segundo a que pinte la imagen y lanzamos el diálogo de impresión
